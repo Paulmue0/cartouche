@@ -1,0 +1,74 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # The stored reference images are pixel comparisons, so they are only
+  # meaningful on the Typst version that produced them.
+  tests:
+    name: Test suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install just
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
+
+      - name: Setup Typst
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: "0.15"
+
+      - name: Setup Tytanic
+        uses: typst-community/setup-tytanic@v1
+        with:
+          tytanic-version: "0.4"
+
+      - name: Run test suite
+        run: just test
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            tests/**/diff/*.png
+            tests/**/out/*.png
+            tests/**/ref/*.png
+          retention-days: 5
+
+      - name: Rebuild the README images
+        run: just docs
+
+  # Every version the manifest claims support for must still compile.
+  compat:
+    name: Typst ${{ matrix.typst }}
+    strategy:
+      fail-fast: false
+      matrix:
+        typst: ["0.12", "0.13", "0.14", "0.15"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install just
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
+
+      - name: Setup Typst
+        uses: typst-community/setup-typst@v4
+        with:
+          typst-version: ${{ matrix.typst }}
+
+      - name: Compile everything
+        run: just check
