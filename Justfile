@@ -36,7 +36,7 @@ update *args:
   tt update {{ args }}
 
 # compile everything against the typst on PATH, without comparing pixels
-check:
+check: install
   #!/usr/bin/env bash
   set -euo pipefail
   typst --version
