@@ -1,1 +1,3 @@
 dev/build/
+tests/**/diff/
+tests/**/out/

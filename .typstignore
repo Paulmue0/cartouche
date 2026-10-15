@@ -1,0 +1,19 @@
+# Read by scripts/package (used by the release workflow): files listed here are
+# not copied into the typst/packages submission.
+#
+# Unlike .gitignore:
+# - patterns match from the repository root: `x.typ` will not match `src/x.typ`
+# - `*` also matches directory separators: `*.typ` _will_ match `src/x.typ`
+# .git and .typstignore are excluded automatically
+
+.github
+.gitignore
+scripts
+tests
+dev
+Justfile
+# the README images must be submitted (typst.toml's `exclude` keeps them out
+# of the downloaded bundle), and so must example.typ, which it links to
+docs/*
+!docs/*.png
+!docs/example.typ

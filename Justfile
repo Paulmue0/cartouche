@@ -2,9 +2,9 @@
 # LICENSE and docs/ belongs in a submission to typst/packages; `exclude` in
 # typst.toml keeps the rest out of the downloaded bundle either way.
 #
-# Before submitting: set `repository` in typst.toml, and check that the
-# version in every `@preview/cartouche:…` import matches the one being
-# published.
+# Releasing: bump `version` in typst.toml and every `@preview/cartouche:…`
+# import, commit, then push a matching `v<version>` tag. The release workflow
+# pushes the package onto a branch of the typst/packages fork.
 
 root := justfile_directory()
 name := `grep '^name' typst.toml | head -1 | cut -d'"' -f2`
@@ -26,6 +26,11 @@ install:
 # remove the @local link
 uninstall:
   rm -f "{{data-dir}}/typst/packages/local/{{name}}/{{version}}"
+
+# copy what gets submitted to typst/packages into <target>/cartouche/<version>
+# (@preview installs it over the published package, for pre-release testing)
+package target:
+  ./scripts/package "{{target}}"
 
 # run the test suite
 test *args:
